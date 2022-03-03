@@ -25,7 +25,7 @@ try {
 
   let alert = {
     payload: {
-      summary: `${context.repo.repo}: Error in "${context.workflow}" run by @${context.actor}`,
+      summary: `${context.repo.repo}: Error in "${context.workflow}"`,
       timestamp: new Date().toISOString(),
       source: 'GitHub Actions',
       severity: 'critical',
