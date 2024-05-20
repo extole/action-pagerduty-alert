@@ -8,7 +8,14 @@ async function sendAlert(alert) {
     const response = await axios.post('https://events.pagerduty.com/v2/enqueue', alert);
 
     if (response.status === 202) {
-      console.log(`Successfully sent PagerDuty alert. Response: ${JSON.stringify(response.data)}`);
+      if (alert.event_action === "trigger") {
+        console.log(`Successfully triggered PagerDuty alert. Response: ${JSON.stringify(response.data)}`);
+      } else if (alert.event_action === "resolve") {
+        console.log(`Successfully resolved PagerDuty alert. Response: ${JSON.stringify(response.data)}`);
+      } else {
+        console.log(`Successfully sent PagerDuty alert. Response: ${JSON.stringify(response.data)}`);
+      }
+      
     } else {
       core.setFailed(
         `PagerDuty API returned status code ${response.status} - ${JSON.stringify(response.data)}`
@@ -22,6 +29,7 @@ async function sendAlert(alert) {
 // Run the action
 try {
   const integrationKey = core.getInput('pagerduty-integration-key');
+  const triggerAction = core.getInput('trigger_action');
 
   let alert = {
     payload: {
@@ -37,7 +45,7 @@ try {
       },
     },
     routing_key: integrationKey,
-    event_action: 'trigger',
+    event_action: triggerAction,
   };
   const dedupKey = core.getInput('pagerduty-dedup-key');
   if (dedupKey != '') {
